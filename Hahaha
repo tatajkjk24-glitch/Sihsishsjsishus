@@ -1,1 +1,868 @@
+-- تحميل مكتبة Fluent
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+
+---------------------------------------------------------
+-- نظام المفاتيح (Key System) - المفتاح هو: 67
+---------------------------------------------------------
+local CORRECT_KEY = "67"
+local isKeyVerified = false
+
+local KeyGui = Instance.new("ScreenGui")
+KeyGui.Name = "SawadHubKeySystem"
+KeyGui.Parent = game:GetService("CoreGui")
+KeyGui.ResetOnSpawn = false
+
+local KeyFrame = Instance.new("Frame")
+KeyFrame.Name = "KeyFrame"
+KeyFrame.Parent = KeyGui
+KeyFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+KeyFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+KeyFrame.Size = UDim2.new(0, 300, 0, 200)
+KeyFrame.Active = true
+KeyFrame.Draggable = true
+
+local KeyCorner = Instance.new("UICorner")
+KeyCorner.CornerRadius = UDim.new(0, 12)
+KeyCorner.Parent = KeyFrame
+
+local KeyStroke = Instance.new("UIStroke")
+KeyStroke.Color = Color3.fromRGB(0, 170, 255)
+KeyStroke.Thickness = 2
+KeyStroke.Parent = KeyFrame
+
+local KeyTitle = Instance.new("TextLabel")
+KeyTitle.Parent = KeyFrame
+KeyTitle.Size = UDim2.new(1, 0, 0, 40)
+KeyTitle.Position = UDim2.new(0, 0, 0, 10)
+KeyTitle.BackgroundTransparency = 1
+KeyTitle.Text = "🔑 سواد Hub - نظام المفتاح"
+KeyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyTitle.Font = Enum.Font.GothamBold
+KeyTitle.TextSize = 16
+
+local KeyInput = Instance.new("TextBox")
+KeyInput.Parent = KeyFrame
+KeyInput.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+KeyInput.Position = UDim2.new(0.1, 0, 0.35, 0)
+KeyInput.Size = UDim2.new(0.8, 0, 0, 40)
+KeyInput.Font = Enum.Font.Gotham
+KeyInput.PlaceholderText = "أدخل المفتاح هنا..."
+KeyInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+KeyInput.Text = ""
+KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyInput.TextSize = 14
+
+local InputCorner = Instance.new("UICorner")
+InputCorner.CornerRadius = UDim.new(0, 8)
+InputCorner.Parent = KeyInput
+
+local SubmitBtn = Instance.new("TextButton")
+SubmitBtn.Parent = KeyFrame
+SubmitBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+SubmitBtn.Position = UDim2.new(0.1, 0, 0.65, 0)
+SubmitBtn.Size = UDim2.new(0.8, 0, 0, 40)
+SubmitBtn.Font = Enum.Font.GothamBold
+SubmitBtn.Text = "تأكيد المفتاح"
+SubmitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SubmitBtn.TextSize = 14
+
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 8)
+BtnCorner.Parent = SubmitBtn
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Parent = KeyFrame
+StatusLabel.Size = UDim2.new(1, 0, 0, 20)
+StatusLabel.Position = UDim2.new(0, 0, 0.88, 0)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = ""
+StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.TextSize = 11
+
+-- فتح السكربت عند إدخال المفتاح الصحيح
+SubmitBtn.MouseButton1Click:Connect(function()
+    if KeyInput.Text == CORRECT_KEY then
+        isKeyVerified = true
+        StatusLabel.TextColor3 = Color3.fromRGB(80, 255, 80)
+        StatusLabel.Text = "تم إدخال المفتاح بنجاح! جاري التشغيل..."
+        task.wait(1)
+        KeyGui:Destroy()
+        
+        -- تشغيل السكربت الرئيسي بعد التحقق
+        loadMainScript()
+    else
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+        StatusLabel.Text = "المفتاح غير صحيح! حاول مرة أخرى."
+    end
+end)
+
+---------------------------------------------------------
+-- وظيفة تشغيل السكربت الرئيسي بعد المفتاح
+---------------------------------------------------------
+function loadMainScript()
+    -- إنشاء النافذة الرئيسية بحقوق "سواد Hub"
+    local Window = Fluent:CreateWindow({
+        Title = "سواد Hub",
+        SubTitle = "by سواد",
+        TabWidth = 160,
+        Size = UDim2.fromOffset(580, 460),
+        Acrylic = true,
+        Theme = "Dark",
+        LineWidth = 2
+    })
+
+    -- إنشاء التبويبات
+    local Tabs = {
+        Main = Window:AddTab({ Title = "الرئيسية", Icon = "home" }),
+        AFK = Window:AddTab({ Title = "AFK", Icon = "clock" }),
+        Fixes = Window:AddTab({ Title = "حلول المشاكل", Icon = "wrench" }),
+        Saver = Window:AddTab({ Title = "توفير الطاقة", Icon = "zap" }),
+        Tracking = Window:AddTab({ Title = "تتبع (النقاط)", Icon = "user-check" }),
+        Credits = Window:AddTab({ Title = "الحقوق", Icon = "user" }),
+        Settings = Window:AddTab({ Title = "الإعدادات", Icon = "settings" })
+    }
+
+    ---------------------------------------------------------
+    -- الخدمات الرئيسية
+    ---------------------------------------------------------
+    local Services = {
+        RunService = game:GetService("RunService"),
+        Lighting = game:GetService("Lighting"),
+        Players = game:GetService("Players"),
+        VirtualUser = game:GetService("VirtualUser"),
+        CoreGui = game:GetService("CoreGui"),
+        TweenService = game:GetService("TweenService")
+    }
+
+    ---------------------------------------------------------
+    -- رسالة الترحيب في أعلى الشاشة
+    ---------------------------------------------------------
+    task.spawn(function()
+        local WelcomeGui = Instance.new("ScreenGui")
+        WelcomeGui.Name = "SawadWelcomeNotification"
+        WelcomeGui.Parent = Services.CoreGui
+        WelcomeGui.ResetOnSpawn = false
+
+        local MainFrame = Instance.new("Frame")
+        MainFrame.Name = "MainFrame"
+        MainFrame.Parent = WelcomeGui
+        MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+        MainFrame.Position = UDim2.new(0.5, -160, -0.15, 0)
+        MainFrame.Size = UDim2.new(0, 320, 0, 50)
+        MainFrame.BorderSizePixel = 0
+
+        local UICorner = Instance.new("UICorner")
+        UICorner.CornerRadius = UDim.new(0, 12)
+        UICorner.Parent = MainFrame
+
+        local UIStroke = Instance.new("UIStroke")
+        UIStroke.Color = Color3.fromRGB(100, 100, 255)
+        UIStroke.Thickness = 2
+        UIStroke.Transparency = 0.2
+        UIStroke.Parent = MainFrame
+
+        local TextLabel = Instance.new("TextLabel")
+        TextLabel.Parent = MainFrame
+        TextLabel.Size = UDim2.new(1, 0, 1, 0)
+        TextLabel.BackgroundTransparency = 1
+        TextLabel.Text = "👑 منور السكربت للمطور سواد 👑"
+        TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TextLabel.Font = Enum.Font.GothamBold
+        TextLabel.TextSize = 15
+
+        local tweenIn = Services.TweenService:Create(
+            MainFrame,
+            TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            { Position = UDim2.new(0.5, -160, 0.03, 0) }
+        )
+        
+        local tweenOut = Services.TweenService:Create(
+            MainFrame,
+            TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In),
+            { Position = UDim2.new(0.5, -160, -0.15, 0) }
+        )
+
+        tweenIn:Play()
+        task.wait(4)
+        tweenOut:Play()
+        
+        tweenOut.Completed:Connect(function()
+            WelcomeGui:Destroy()
+        end)
+    end)
+
+    ---------------------------------------------------------
+    -- 1. تبويب الرئيسية
+    ---------------------------------------------------------
+    Tabs.Main:AddParagraph({
+        Title = "أهلاً بك في سواد Hub",
+        Content = "اضغط على صورة الأسود العائمة لإخفاء أو إظهار السكربت في أي وقت."
+    })
+
+    ---------------------------------------------------------
+    -- 2. تبويب AFK
+    ---------------------------------------------------------
+    local antiAfkConnection
+    local antiKickHook
+
+    Tabs.AFK:AddToggle("AntiKickToggle", {
+        Title = "تفعيل Anti-Kick الخارق",
+        Description = "حماية قوية جداً تمنع سكربتات اللعبة أو المشرفين من طردك",
+        Default = true,
+        Callback = function(Value)
+            if Value then
+                local LocalPlayer = Services.Players.LocalPlayer
+                local OldNamecall
+                
+                if hookmetamethod then
+                    OldNamecall = hookmetamethod(game, "__namecall", function(Self, ...)
+                        local Method = getnamecallmethod()
+                        if tostring(Method):lower() == "kick" and Self == LocalPlayer then
+                            Fluent:Notify({
+                                Title = "سواد Hub - Anti Kick",
+                                Content = "تم إحباط محاولة طردك من اللعبة بنجاح!",
+                                Duration = 3
+                            })
+                            return nil
+                        end
+                        return OldNamecall(Self, ...)
+                    end)
+                end
+
+                if LocalPlayer and LocalPlayer.Kick then
+                    antiKickHook = hookfunction(LocalPlayer.Kick, function()
+                        return nil
+                    end)
+                end
+
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم تفعيل حماية Anti-Kick الخارقة!", Duration = 3 })
+            else
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم إيقاف حماية Anti-Kick", Duration = 3 })
+            end
+        end
+    })
+
+    Tabs.AFK:AddToggle("AntiAfkToggle", {
+        Title = "تفعيل Anti-AFK الخارق",
+        Description = "حماية فائقة تمنع طردك من السيرفر بعد 20 دقيقة خمول",
+        Default = true,
+        Callback = function(Value)
+            if Value then
+                antiAfkConnection = Services.Players.LocalPlayer.Idled:Connect(function()
+                    Services.VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                    task.wait(1)
+                    Services.VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                end)
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم تفعيل حماية Anti-AFK", Duration = 3 })
+            else
+                if antiAfkConnection then
+                    antiAfkConnection:Disconnect()
+                end
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم إيقاف حماية Anti-AFK", Duration = 3 })
+            end
+        end
+    })
+
+    local timerActive = false
+    local timerThread
+    local ExternalTimerGui
+    local TimerLabel
+
+    Tabs.AFK:AddToggle("AFKTimerToggle", {
+        Title = "مؤقت الخمول الخارجي (AFK Display)",
+        Description = "يظهر نافذة خارجية سوداء على الشاشة تحسب وقت دخولك والـ AFK",
+        Default = false,
+        Callback = function(Value)
+            timerActive = Value
+            if Value then
+                if not ExternalTimerGui then
+                    ExternalTimerGui = Instance.new("ScreenGui")
+                    ExternalTimerGui.Name = "SawadExternalAFKTimer"
+                    ExternalTimerGui.Parent = Services.CoreGui
+                    ExternalTimerGui.ResetOnSpawn = false
+
+                    local TimerFrame = Instance.new("Frame")
+                    TimerFrame.Name = "TimerFrame"
+                    TimerFrame.Parent = ExternalTimerGui
+                    TimerFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+                    TimerFrame.Position = UDim2.new(0.5, -100, 0.08, 0)
+                    TimerFrame.Size = UDim2.new(0, 200, 0, 60)
+                    TimerFrame.Active = true
+                    TimerFrame.Draggable = true
+
+                    local FrameCorner = Instance.new("UICorner")
+                    FrameCorner.CornerRadius = UDim.new(0, 10)
+                    FrameCorner.Parent = TimerFrame
+
+                    local FrameStroke = Instance.new("UIStroke")
+                    FrameStroke.Color = Color3.fromRGB(0, 170, 255)
+                    FrameStroke.Thickness = 2
+                    FrameStroke.Parent = TimerFrame
+
+                    local Title = Instance.new("TextLabel")
+                    Title.Parent = TimerFrame
+                    Title.Size = UDim2.new(1, 0, 0, 20)
+                    Title.Position = UDim2.new(0, 0, 0, 5)
+                    Title.BackgroundTransparency = 1
+                    Title.Text = "⏱️ AFK Timer - سواد Hub"
+                    Title.TextColor3 = Color3.fromRGB(180, 180, 180)
+                    Title.Font = Enum.Font.GothamBold
+                    Title.TextSize = 11
+
+                    TimerLabel = Instance.new("TextLabel")
+                    TimerLabel.Parent = TimerFrame
+                    TimerLabel.Size = UDim2.new(1, 0, 0, 30)
+                    TimerLabel.Position = UDim2.new(0, 0, 0, 25)
+                    TimerLabel.BackgroundTransparency = 1
+                    TimerLabel.Text = "00:00:00"
+                    TimerLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+                    TimerLabel.Font = Enum.Font.GothamBold
+                    TimerLabel.TextSize = 18
+                end
+
+                ExternalTimerGui.Enabled = true
+                local startTime = os.time()
+
+                timerThread = task.spawn(function()
+                    while timerActive do
+                        local elapsedTime = os.time() - startTime
+                        local hrs = math.floor(elapsedTime / 3600)
+                        local mins = math.floor((elapsedTime % 3600) / 60)
+                        local secs = elapsedTime % 60
+                        if TimerLabel then
+                            TimerLabel.Text = string.format("%02d:%02d:%02d", hrs, mins, secs)
+                        end
+                        task.wait(1)
+                    end
+                end)
+
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم إظهار النافذة الخارجية للتايمر!", Duration = 3 })
+            else
+                if timerThread then
+                    task.cancel(timerThread)
+                end
+                if ExternalTimerGui then
+                    ExternalTimerGui.Enabled = false
+                end
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم إغلاق النافذة الخارجية للتايمر", Duration = 3 })
+            end
+        end
+    })
+
+    local autoClickerActive = false
+    local autoClickerThread
+
+    Tabs.AFK:AddToggle("AutoClickerToggle", {
+        Title = "أوتو كليكر (نقرة كل دقيقتين)",
+        Description = "يقوم بالضغط التلقائي مرة واحدة كل 120 ثانية لتنشيط اللعبة",
+        Default = false,
+        Callback = function(Value)
+            autoClickerActive = Value
+            if Value then
+                autoClickerThread = task.spawn(function()
+                    while autoClickerActive do
+                        Services.VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                        task.wait(0.1)
+                        Services.VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                        
+                        Fluent:Notify({
+                            Title = "سواد Hub - Auto Clicker",
+                            Content = "تم الضغط التلقائي بنجاح! النقرة التالية بعد دقيقتين.",
+                            Duration = 2
+                        })
+                        
+                        task.wait(120)
+                    end
+                end)
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم تفعيل الأوتو كليكر التلقائي", Duration = 3 })
+            else
+                if autoClickerThread then
+                    task.cancel(autoClickerThread)
+                end
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم إيقاف الأوتو كليكر", Duration = 3 })
+            end
+        end
+    })
+
+    ---------------------------------------------------------
+    -- 3. تبويب حلول المشاكل (حلول أنواع الطرد)
+    ---------------------------------------------------------
+    Tabs.Fixes:AddParagraph({
+        Title = "مركز حلول وأعطال الطرد (Kick Resolver)",
+        Content = "يقوم هذا التبويب بحل ومعالجة كافة أنواع الطرد الناتجة عن الحماية، اللاق، انقطاع الاتصال، أو امتلأ الذاكرة."
+    })
+
+    Tabs.Fixes:AddToggle("AntiCheatFix", {
+        Title = "حماية من طرد Anti-Cheat / Remotes",
+        Description = "تعطيل ريموتات اللعبة المشبوهة التي ترسل أوامر طرد تلقائية",
+        Default = true,
+        Callback = function(Value)
+            if Value then
+                pcall(function()
+                    for _, descendant in pairs(game:GetDescendants()) do
+                        if descendant:IsA("RemoteEvent") or descendant:IsA("RemoteFunction") then
+                            local name = descendant.Name:lower()
+                            if name:find("kick") or name:find("ban") or name:find("check") or name:find("cheat") or name:find("anticheat") then
+                                descendant.Parent = nil
+                            end
+                        end
+                    end
+                end)
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم حظر وتفريغ ريموتات الطرد التلقائية!", Duration = 3 })
+            end
+        end
+    })
+
+    Tabs.Fixes:AddButton({
+        Title = "حل طرد امتلأ الذاكرة / اللاق (Memory Clean)",
+        Description = "تنظيف الذاكرة العشوائية لتجنب طرد الخروج المباشر وتجمد اللعبة",
+        Callback = function()
+            pcall(function()
+                collectgarbage("collect")
+                game:GetService("ContentProvider"):PreloadAsync({})
+            end)
+            Fluent:Notify({ Title = "سواد Hub", Content = "تم تنظيف ذاكرة اللعبة (RAM) وتحرير المساحة بنجاح!", Duration = 3 })
+        end
+    })
+
+    local antiTeleportKick = true
+    Tabs.Fixes:AddToggle("AntiTeleportKickToggle", {
+        Title = "منع طرد التحويل أو السيرفرات الفرعية",
+        Description = "يمنع اللعبة من نقلك لـ Server آخر بهدف طردك أو حظرك",
+        Default = true,
+        Callback = function(Value)
+            antiTeleportKick = Value
+            if hookmetamethod then
+                local oldTeleport
+                oldTeleport = hookmetamethod(game:GetService("TeleportService"), "__namecall", function(self, ...)
+                    local method = getnamecallmethod()
+                    if not antiTeleportKick and (method == "Teleport" or method == "TeleportToPlaceInstance") then
+                        Fluent:Notify({ Title = "سواد Hub", Content = "تم منع محاولة تحويلك لسيرفر آخر!", Duration = 3 })
+                        return nil
+                    end
+                    return oldTeleport(self, ...)
+                end)
+            end
+        end
+    })
+
+    Tabs.Fixes:AddButton({
+        Title = "تنظيف شامـل وإعادة إنعاش الاتصال",
+        Description = "حل مشاكل التقطيع والـ Ping العالي لتجنب طرد Error 277 / 268",
+        Callback = function()
+            pcall(function()
+                settings().Network.IncomingReplicationLag = 0
+                Services.RunService:Set3dRenderingEnabled(true)
+                collectgarbage("collect")
+            end)
+            Fluent:Notify({
+                Title = "سواد Hub",
+                Content = "تم إعادة ضبط شبكة اللعبة وتنظيف النظام بنجاح!",
+                Duration = 4
+            })
+        end
+    })
+
+    ---------------------------------------------------------
+    -- 4. تبويب توفير الطاقة وإزالة اللاق
+    ---------------------------------------------------------
+    Tabs.Saver:AddToggle("CoolingMode", {
+        Title = "مبرد الهاتف (Thermal Cooler)",
+        Description = "يخفض استهلاك المعالج لتبريد الهاتف أثناء التجميع",
+        Default = false,
+        Callback = function(Value)
+            if Value then
+                setfpscap(15)
+                Services.RunService:Set3dRenderingEnabled(false)
+                Services.Lighting.GlobalShadows = false
+                settings().Rendering.QualityLevel = 1
+            else
+                setfpscap(60)
+                Services.RunService:Set3dRenderingEnabled(true)
+            end
+        end
+    })
+
+    Tabs.Saver:AddButton({
+        Title = "مخفف اللاق (حذف تفاصيل الماب)",
+        Description = "يحذف التأثيرات والأنسجة والظلال لتخفيف اللاق كلياً",
+        Callback = function()
+            pcall(function()
+                Services.Lighting.GlobalShadows = false
+                Services.Lighting.FogEnd = 9e9
+                
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v:IsA("BasePart") then
+                        v.Material = Enum.Material.Plastic
+                        v.Reflectance = 0
+                    elseif v:IsA("Decal") or v:IsA("Texture") then
+                        v:Destroy()
+                    elseif v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+                        v.Enabled = false
+                    end
+                end
+            end)
+            
+            Fluent:Notify({
+                Title = "سواد Hub",
+                Content = "تم حذف التفاصيل والمؤثرات وزيادة سرعة الأداء بنجاح!",
+                Duration = 4
+            })
+        end
+    })
+
+    local xrayOriginalMaterials = {}
+    Tabs.Saver:AddToggle("XrayToggle", {
+        Title = "وضع X-Ray (تخفيف الشاشة والجدران)",
+        Description = "يحول جدران الماب إلى زجاج شفاف لتخفيف حمل الجرافيكس",
+        Default = false,
+        Callback = function(Value)
+            pcall(function()
+                for _, part in pairs(workspace:GetDescendants()) do
+                    if part:IsA("BasePart") and not part:IsDescendantOf(Services.Players.LocalPlayer.Character or Instance.new("Model")) then
+                        if Value then
+                            if not xrayOriginalMaterials[part] then
+                                xrayOriginalMaterials[part] = { Transparency = part.Transparency, Material = part.Material }
+                            end
+                            part.Transparency = 0.5
+                            part.Material = Enum.Material.Glass
+                        else
+                            if xrayOriginalMaterials[part] then
+                                part.Transparency = xrayOriginalMaterials[part].Transparency
+                                part.Material = xrayOriginalMaterials[part].Material
+                            end
+                        end
+                    end
+                end
+            end)
+            
+            if Value then
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم تفعيل وضع X-Ray الشفاف", Duration = 3 })
+            else
+                Fluent:Notify({ Title = "سواد Hub", Content = "تم إلغاء وضع X-Ray", Duration = 3 })
+            end
+        end
+    })
+
+    Tabs.Saver:AddSlider("FPSSlider", {
+        Title = "تحديد معدل الفريمات (FPS Cap)",
+        Default = 60,
+        Min = 10,
+        Max = 60,
+        Rounding = 0,
+        Callback = function(Value)
+            setfpscap(Value)
+        end
+    })
+
+    local BlackScreenGui
+    Tabs.Saver:AddToggle("BlackScreen", {
+        Title = "وضع الشاشة السوداء (Black Screen)",
+        Default = false,
+        Callback = function(Value)
+            if Value then
+                BlackScreenGui = Instance.new("ScreenGui")
+                BlackScreenGui.Name = "SawadBlackScreenGui"
+                BlackScreenGui.Parent = Services.CoreGui
+                
+                local Frame = Instance.new("Frame")
+                Frame.Size = UDim2.new(1, 0, 1, 0)
+                Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                Frame.BorderSizePixel = 0
+                Frame.Parent = BlackScreenGui
+                
+                local TextLabel = Instance.new("TextLabel")
+                TextLabel.Text = "سواد Hub - وضع توفير الطاقة"
+                TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+                TextLabel.Size = UDim2.new(1, 0, 1, 0)
+                TextLabel.BackgroundTransparency = 1
+                TextLabel.Font = Enum.Font.GothamBold
+                TextLabel.TextSize = 22
+                TextLabel.Parent = Frame
+            else
+                if BlackScreenGui then
+                    BlackScreenGui:Destroy()
+                end
+            end
+        end
+    })
+
+    ---------------------------------------------------------
+    -- 5. تبويب تتبع النقاط
+    ---------------------------------------------------------
+    local playerStats = {}
+
+    local function trackPlayer(player)
+        if not playerStats[player.Name] then
+            playerStats[player.Name] = { startTime = os.time(), joins = 0, leaves = 0 }
+        end
+    end
+
+    for _, player in ipairs(Services.Players:GetPlayers()) do trackPlayer(player) end
+
+    Services.Players.PlayerAdded:Connect(function(player)
+        if playerStats[player.Name] then
+            playerStats[player.Name].joins = playerStats[player.Name].joins + 1
+            playerStats[player.Name].startTime = os.time()
+        else 
+            trackPlayer(player) 
+        end
+    end)
+
+    Services.Players.PlayerRemoving:Connect(function(player)
+        if playerStats[player.Name] then 
+            playerStats[player.Name].leaves = playerStats[player.Name].leaves + 1 
+        end
+    end)
+
+    Tabs.Tracking:AddParagraph({
+        Title = "تتبع نقاط ومدة بقاء الخصم واللاعبين",
+        Content = "اضغط على الزر أدناه لفتح واجهة التتبع والبحث لمراقبة مدة بقاء اللاعبين وعدد مرات دخولهم وخروجهم."
+    })
+
+    Tabs.Tracking:AddButton({
+        Title = "فتح واجهة تتبع النقاط",
+        Description = "فتح قائمة التتبع والبحث التلقائي مباشرةً",
+        Callback = function()
+            if Services.CoreGui:FindFirstChild("SawadHubTrackerGui") then
+                Services.CoreGui.SawadHubTrackerGui.MainFrame.Visible = true
+                return
+            end
+
+            local TrackerGui = Instance.new("ScreenGui")
+            TrackerGui.Name = "SawadHubTrackerGui"
+            TrackerGui.Parent = Services.CoreGui
+            TrackerGui.ResetOnSpawn = false
+
+            local MainFrame = Instance.new("Frame")
+            MainFrame.Name = "MainFrame"
+            MainFrame.Parent = TrackerGui
+            MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            MainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
+            MainFrame.Size = UDim2.new(0, 450, 0, 350)
+            MainFrame.Active = true
+            MainFrame.Draggable = true
+
+            local MainCorner = Instance.new("UICorner")
+            MainCorner.CornerRadius = UDim.new(0, 10)
+            MainCorner.Parent = MainFrame
+
+            local MainStroke = Instance.new("UIStroke")
+            MainStroke.Color = Color3.fromRGB(0, 170, 255)
+            MainStroke.Thickness = 2
+            MainStroke.Parent = MainFrame
+
+            local TitleLabel = Instance.new("TextLabel")
+            TitleLabel.Parent = MainFrame
+            TitleLabel.BackgroundTransparency = 1
+            TitleLabel.Position = UDim2.new(0, 50, 0, 10)
+            TitleLabel.Size = UDim2.new(1, -60, 0, 30)
+            TitleLabel.Font = Enum.Font.GothamBold
+            TitleLabel.Text = "سواد Hub - تتبع النقاط والخصم"
+            TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            TitleLabel.TextSize = 16
+            TitleLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+            local CloseImageBtn = Instance.new("ImageButton")
+            CloseImageBtn.Name = "BlueCloseButton"
+            CloseImageBtn.Parent = MainFrame
+            CloseImageBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+            CloseImageBtn.Position = UDim2.new(0, 10, 0, 10)
+            CloseImageBtn.Size = UDim2.new(0, 30, 0, 30)
+            CloseImageBtn.Image = "rbxassetid://10747384394"
+
+            local CloseCorner = Instance.new("UICorner")
+            CloseCorner.CornerRadius = UDim.new(1, 0)
+            CloseCorner.Parent = CloseImageBtn
+
+            local CloseStroke = Instance.new("UIStroke")
+            CloseStroke.Color = Color3.fromRGB(255, 255, 255)
+            CloseStroke.Thickness = 1.5
+            CloseStroke.Parent = CloseImageBtn
+
+            CloseImageBtn.MouseButton1Click:Connect(function()
+                MainFrame.Visible = false
+            end)
+
+            local StartButton = Instance.new("TextButton")
+            StartButton.Parent = MainFrame
+            StartButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+            StartButton.Position = UDim2.new(0, 15, 0, 50)
+            StartButton.Size = UDim2.new(0, 90, 0, 35)
+            StartButton.Font = Enum.Font.GothamBold
+            StartButton.Text = "إبداء"
+            StartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            StartButton.TextSize = 14
+
+            local BtnCorner = Instance.new("UICorner")
+            BtnCorner.CornerRadius = UDim.new(0, 6)
+            BtnCorner.Parent = StartButton
+
+            local SearchBox = Instance.new("TextBox")
+            SearchBox.Parent = MainFrame
+            SearchBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            SearchBox.Position = UDim2.new(0, 115, 0, 50)
+            SearchBox.Size = UDim2.new(1, -130, 0, 35)
+            SearchBox.Font = Enum.Font.Gotham
+            SearchBox.PlaceholderText = "اكتب أول حرفين من الاسم..."
+            SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+            SearchBox.Text = ""
+            SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+            SearchBox.TextSize = 13
+
+            local SearchCorner = Instance.new("UICorner")
+            SearchCorner.CornerRadius = UDim.new(0, 6)
+            SearchCorner.Parent = SearchBox
+
+            local ResultFrame = Instance.new("ScrollingFrame")
+            ResultFrame.Parent = MainFrame
+            ResultFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+            ResultFrame.Position = UDim2.new(0, 15, 0, 95)
+            ResultFrame.Size = UDim2.new(1, -30, 0, 240)
+            ResultFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+            ResultFrame.ScrollBarThickness = 5
+
+            local ResultCorner = Instance.new("UICorner")
+            ResultCorner.CornerRadius = UDim.new(0, 6)
+            ResultCorner.Parent = ResultFrame
+
+            local UIListLayout = Instance.new("UIListLayout")
+            UIListLayout.Parent = ResultFrame
+            UIListLayout.Padding = UDim.new(0, 6)
+
+            local UIPadding = Instance.new("UIPadding")
+            UIPadding.Parent = ResultFrame
+            UIPadding.PaddingTop = UDim.new(0, 6)
+            UIPadding.PaddingBottom = UDim.new(0, 6)
+            UIPadding.PaddingLeft = UDim.new(0, 6)
+            UIPadding.PaddingRight = UDim.new(0, 6)
+
+            local activeCards = {}
+
+            StartButton.MouseButton1Click:Connect(function()
+                activeCards = {}
+                for _, v in ipairs(ResultFrame:GetChildren()) do if v:IsA("Frame") then v:Destroy() end end
+                local query = string.lower(SearchBox.Text)
+
+                for name, data in pairs(playerStats) do
+                    if string.sub(string.lower(name), 1, #query) == query or query == "" then
+                        local plr = Services.Players:FindFirstChild(name)
+                        local points = 0
+                        if plr and plr:FindFirstChild("leaderstats") and plr.leaderstats:FindFirstChild("Points") then
+                            points = plr.leaderstats.Points.Value
+                        end
+
+                        local Card = Instance.new("Frame")
+                        Card.Parent = ResultFrame
+                        Card.Size = UDim2.new(1, 0, 0, 50)
+                        Card.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+
+                        local CardCorner = Instance.new("UICorner")
+                        CardCorner.CornerRadius = UDim.new(0, 6)
+                        CardCorner.Parent = Card
+
+                        local NameLabel = Instance.new("TextLabel")
+                        NameLabel.Parent = Card
+                        NameLabel.Position = UDim2.new(0, 10, 0, 5)
+                        NameLabel.Size = UDim2.new(1, -20, 0, 18)
+                        NameLabel.BackgroundTransparency = 1
+                        NameLabel.Font = Enum.Font.GothamBold
+                        NameLabel.Text = string.format("👤 %s | 🏆 النقاط: %d", name, points)
+                        NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        NameLabel.TextSize = 13
+                        NameLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+                        local DetailsLabel = Instance.new("TextLabel")
+                        DetailsLabel.Parent = Card
+                        DetailsLabel.Position = UDim2.new(0, 10, 0, 25)
+                        DetailsLabel.Size = UDim2.new(1, -20, 0, 18)
+                        DetailsLabel.BackgroundTransparency = 1
+                        DetailsLabel.Font = Enum.Font.Gotham
+                        DetailsLabel.Text = string.format("مدة البقاء: 00:00:00 | دخول: %d | خروج: %d", data.joins, data.leaves)
+                        DetailsLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+                        DetailsLabel.TextSize = 11
+                        DetailsLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+                        table.insert(activeCards, { Label = DetailsLabel, StartTime = data.startTime, Joins = data.joins, Leaves = data.leaves })
+                    end
+                end
+                ResultFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 12)
+            end)
+
+            task.spawn(function()
+                while true do
+                    task.wait(1)
+                    local now = os.time()
+                    for _, cardData in ipairs(activeCards) do
+                        if cardData.Label and cardData.Label.Parent then
+                            local timeSpent = math.max(0, now - cardData.StartTime)
+                            local hrs = math.floor(timeSpent / 3600)
+                            local mins = math.floor((timeSpent % 3600) / 60)
+                            local secs = timeSpent % 60
+                            cardData.Label.Text = string.format("مدة البقاء: %02d:%02d:%02d | دخول: %d | خروج: %d", hrs, mins, secs, cardData.Joins, cardData.Leaves)
+                        end
+                    end
+                end
+            end)
+        end
+    })
+
+    ---------------------------------------------------------
+    -- 6. تبويب الحقوق
+    ---------------------------------------------------------
+    Tabs.Credits:AddParagraph({
+        Title = "المطور الرئيسي",
+        Content = "تم تطوير وبناء هذا السكربت بواسطة: سواد"
+    })
+
+    Tabs.Credits:AddParagraph({
+        Title = "نسخة السكربت",
+        Content = "سواد Hub - الإصدار v1.0"
+    })
+
+    ---------------------------------------------------------
+    -- 7. إنشاء زر الصورة العائم (للفتح والإغلاق)
+    ---------------------------------------------------------
+    local ToggleGui = Instance.new("ScreenGui")
+    ToggleGui.Name = "SawadHubToggleGui"
+    ToggleGui.Parent = Services.CoreGui
+    ToggleGui.ResetOnSpawn = false
+
+    local ImageButton = Instance.new("ImageButton")
+    ImageButton.Name = "ToggleImageButton"
+    ImageButton.Parent = ToggleGui
+    ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ImageButton.Position = UDim2.new(0, 20, 0.5, -25)
+    ImageButton.Size = UDim2.new(0, 55, 0, 55)
+    ImageButton.Active = true
+    ImageButton.Draggable = true
+
+    ImageButton.Image = "rbxassetid://13589098553"
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(1, 0)
+    UICorner.Parent = ImageButton
+
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Color = Color3.fromRGB(60, 60, 60)
+    UIStroke.Thickness = 2
+    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke.Parent = ImageButton
+
+    local isOpen = true
+
+    ImageButton.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        
+        if Window and Window.Root then
+            Window.Root.Visible = isOpen
+        end
+
+        local targetSize = isOpen and UDim2.new(0, 55, 0, 55) or UDim2.new(0, 48, 0, 48)
+        Services.TweenService:Create(ImageButton, TweenInfo.new(0.15), {Size = targetSize}):Play()
+    end)
+
+    Window:SelectTab(1)
+end
 
